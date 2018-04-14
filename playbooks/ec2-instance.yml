@@ -8,7 +8,7 @@
     vars:
       instance_type: t2.micro
       security_group: launch-wizard-1 # Change the security group name here
-      image: ami-03291866 # This is an AMI i created myself
+      image: ami-03291866 # This is the AMI for RHEL 7 AWS
       keypair: jwade005NTI460AWS # This is one of my keys that i already have in AWS
       region: us-east-2 # Change the Region
       count: 1
