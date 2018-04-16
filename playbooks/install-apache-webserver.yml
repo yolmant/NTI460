@@ -1,5 +1,5 @@
 ---
-  - name: Transfer and execute a script.
+  - name: Transfer and execute a script
     hosts: webserver
     user: ec2-user
     sudo: yes
