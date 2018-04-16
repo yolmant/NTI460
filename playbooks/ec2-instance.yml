@@ -7,7 +7,7 @@
     # Necessary Variables for creating/provisioning the EC2 Instance
     vars:
       instance_type: t2.micro
-      security_group: launch-wizard-1 # Change the security group name here
+      security_group: launch-wizard-1 # Change the security group name here - description below MUST match AWS
       image: ami-03291866 # This is the AMI for RHEL 7 AWS
       keypair: jwade005NTI460AWS # This is one of my keys that i already have in AWS
       region: us-east-2 # Change the Region
