@@ -38,3 +38,6 @@ scripts/bootstrap-ansible.sh
 # **** prepare the target hosts (the following commands should be executed on the compute nodes -- run as root)
 
 yum upgrade
+
+
+# checking github repo sync
