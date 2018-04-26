@@ -92,3 +92,93 @@ systemctl start ntpd.service
 #                   On every compute node	  Always
 #   br-vlan	        On every network node	  Never
 #                   On every compute node	  Never
+
+# **** configure the deployment (run on the controller as root)
+
+cp /opt/openstack-ansible/etc/openstack_deploy /etc/openstack_deploy
+
+cd /etc/openstack_deploy
+
+cp openstack_user_config.yml.example /etc/openstack_deploy/openstack_user_config.yml
+
+# **** review the openstack_user_config.yml file and configure to our environment
+
+# **** install additional services?
+# To install additional services, the files in /etc/openstack_deploy/conf.d provide examples showing
+# the correct host groups to use. To add another service, add the host group, allocate hosts to it,
+# and then execute the playbooks.
+
+# review openstack/infrastructure service roles for services
+# configure service credentials
+
+# configure credentials for each service in the /etc/openstack_deploy/*_secrets.yml files
+# use the Ansible Vault feature? increases security by encrypting any files that contain credentials
+# djust permissions on these files to restrict access by nonprivileged users
+
+# chmod 400 -R </path/to/credentials>
+
+# keystone_auth_admin_password option configures the admin tenant password for both the openstack API and dashboard access.
+
+# use the pw-token-gen.py script to generate random values for the variables in each file that contains service credentials:
+
+# cd /opt/openstack-ansible
+# ./scripts/pw-token-gen.py --file /etc/openstack_deploy/user_secrets.yml
+
+# regenerate existing passwords, add the --regen flag
+
+# **** Ensure that all the files edited in the /etc/openstack_deploy directory are Ansible YAML compliant
+
+cd /opt/openstack-ansible/playbooks
+openstack-ansible setup-infrastructure.yml --syntax-check
+
+# **** important: recheck that all indentation is correct. this is important because
+# the syntax of the configuration files can be correct while not being meaningful for OpenStack-Ansible
+
+# **** RUN THE PLAYBOOKS TO INSTALL OPENSTACK ****
+
+# run the host setup playbook
+cd /opt/openstack-ansible/playbooks
+openstack-ansible setup-hosts.yml
+
+# satisfactory completion with zero items unreachable or failed in output
+
+# run the infrastructure setup playbook
+openstack-ansible setup-infrastructure.yml
+
+# satisfactory completion with zero items unreachable or failed in output
+
+# verify the database cluster
+ansible galera_container -m shell \
+-a "mysql -h localhost -e 'show status like \"%wsrep_cluster_%\";'"
+
+# run the openstack setup playbook
+openstack-ansible setup-openstack.yml
+
+# satisfactory completion with zero items unreachable or failed in output
+
+# verify openstack isntallation
+
+# determine the name of the utility container
+touch utility_container.txt
+lxc-ls | grep utility > utility_container.txt
+
+# access the utility_container
+lxc-attach -n < utility_container.txt
+
+# source the admin tenant credentials
+touch /root/admin_tenant_creditials.txt
+source /root/openrc > /root/admin_tenant_creditials.txt
+
+# run an openstack command
+openstack user list
+
+# verify the dashboard (horizon)
+
+# With a web browser, access the Dashboard by using the external load balancer IP address defined by
+# the external_lb_vip_address option in the /etc/openstack_deploy/openstack_user_config.yml file.
+# The Dashboard uses HTTPS on port 443.
+
+# Authenticate by using the admin user name and the password defined by the keystone_auth_admin_password
+# option in the /etc/openstack_deploy/user_secrets.yml file.
+
+echo "open-stack-ansible installation complete!"
