@@ -85,10 +85,10 @@ systemctl start ntpd.service
 
 # Bridge name	    Best configured on	    With a static IP
 
-# br-mgmt	        On every node	          Always
-# br-storage	    On every storage node	  When component is deployed on bare metal
-#                 On every compute node	  Always
-# br-vxlan	      On every network node	  When component is deployed on bare metal
-#                 On every compute node	  Always
-# br-vlan	        On every network node	  Never
-#                 On every compute node	  Never
+#   br-mgmt	        On every node	          Always
+#   br-storage	    On every storage node	  When component is deployed on bare metal
+#                   On every compute node	  Always
+#   br-vxlan	      On every network node	  When component is deployed on bare metal
+#                   On every compute node	  Always
+#   br-vlan	        On every network node	  Never
+#                   On every compute node	  Never
