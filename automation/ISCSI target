@@ -1,0 +1,10 @@
+# check the disk to use for storage using the command
+# fdisk -l | grep -i sd for this case we use /dev/sdb
+# create a partition of the disk with fdisk /dev/sdb for this it will be /dev/sdb2
+# and create a directory and mount the partition on the directory
+mkdir /storage/ISO
+mount -t xfs /dev/sdb2 /storage/ISO
+
+#make the mount permanent
+echo '/dev/sdb2  /storage/ISO       xfs   defaults  0 0' >> /etc/fstab
+
