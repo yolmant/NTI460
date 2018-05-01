@@ -8,3 +8,32 @@ mount -t xfs /dev/sdb2 /storage/ISO
 #make the mount permanent
 echo '/dev/sdb2  /storage/ISO       xfs   defaults  0 0' >> /etc/fstab
 
+#create a logical volume on the partition
+pvcreate /dev/sdb2
+vgcreate vg_iscsi_server /dev/sdb2
+lvcreate -l 100%FREE lv_iscsi_server vg_iscsi_server
+
+#install the target packages
+yum -y install targetcli
+
+#get into the creation of the target
+targetcli
+
+#create a block or fileio for the storage volume
+/backstore/block/> create first_block_server /dev/vg_iscsi_server/lv_iscsi_server
+
+#create the path of the target
+/iscsi/> create iqn.2018-05.local.nti460.server:target1
+
+#introduce a the protal, acls and lun
+/iscsi/iqn.2018-05.local.nti460.server:target1/tpg1/acls/> create iqn.2018-05.local.nti460.server:node1node2node3
+/iscsi/iqn.2018-05.local.nti460.server:target1/tpg1/luns/> create /backstpre/block/first_block_server
+/iscsi/iqn.2018-05.local.nti460.server:target1/tpg1/portals/> create IP_server  port(3260)
+
+#Restart and enable iscsi services
+systemctl restart targetd
+systemctl enable targetd
+
+#open the port on the firewall
+firewall-cmd --permanent --add-port=3260/tcp
+firewall-cmd --reload
